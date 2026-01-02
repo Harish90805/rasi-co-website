@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>My Cart – RASI & CO</title>
+<style>
+  body {
+    font-family: 'Segoe UI', sans-serif;
+    background: #f6f7fb;
+    margin: 0;
+  }
+  /* header */
+  header {
+    position: sticky;
+    top: 0;
+    background: linear-gradient(90deg,#dd2c2f,#dd2c2f);
+    color: #fff;
+    padding: 15px 20px;
+    font-size: 22px;
+    font-weight: bold;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 1000;
+  }
+  header .logo {
+    font-size: 22px;
+    font-weight: bold;
+  }
+  header .cart-count {
+    background:#fff;
+    color:#dd2c2f;
+    padding:3px 8px;
+    border-radius:12px;
+    font-size:14px;
+    font-weight:600;
+  }
+
+  .cart-container {
+    padding: 20px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 20px;
+  }
+
+  .cart-card {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    overflow: hidden;
+    transition: transform .2s, box-shadow .2s;
+    display: flex;
+    flex-direction: column;
+  }
+  .cart-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+  }
+  .cart-img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+  }
+  .cart-details {
+    padding: 15px;
+    text-align: center;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .cart-name {
+    font-size: 16px;
+    font-weight: 600;
+    margin: 5px 0;
+    color:#333;
+  }
+  .cart-price {
+    font-size: 15px;
+    color:#dd2c2f;
+    margin:5px 0 10px;
+    font-weight: 600;
+  }
+  .qty-controls {
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:6px;
+    margin-bottom:8px;
+  }
+  .qty-btn {
+    width:24px;
+    height:24px;
+    border:none;
+    background:#dd2c2f;
+    color:#fff;
+    border-radius:4px;
+    cursor:pointer;
+    font-size:16px;
+  }
+  .btn {
+    background: linear-gradient(90deg,#dd2c2f,#dd2c2f);
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 14px;
+    font-weight: bold;
+    margin: 4px;
+  }
+  .btn:hover {
+    background: linear-gradient(90deg,#6f1d2b,#7a182a);
+    box-shadow: 0 4px 12px rgba(150, 50, 50, 0.4);
+  }
+
+  .summary-bar {
+    position:sticky;
+    bottom:0;
+    background:#fff;
+    box-shadow:0 -2px 6px rgba(0,0,0,0.1);
+    padding:15px;
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:center;
+    align-items:center;
+    gap:10px;
+    font-size:16px;
+    font-weight:600;
+    color:#333;
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="logo">🛒 My Cart</div>
+  <div class="cart-count" id="cartCount">0</div>
+</header>
+
+<div class="cart-container" id="cart-container"></div>
+
+<div class="summary-bar">
+  <span id="total-box">Total: ₹0</span>
+  <button class="btn" onclick="window.location.href='home.html'">← Continue Shopping</button>
+  <button class="btn" onclick="proceedCheckout()">Proceed to Checkout</button>
+  <button class="btn" onclick="clearCart()">Clear Cart</button>
+</div>
+
+
+<script>
+  const cartContainer = document.getElementById("cart-container");
+  const totalBox = document.getElementById("total-box");
+  const cartCount = document.getElementById("cartCount");
+  let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+  function renderCart(){
+    cartContainer.innerHTML="";
+    if(cart.length===0){
+      cartContainer.innerHTML="<p style='grid-column:1/-1;text-align:center;font-size:18px;'>Your cart is empty.</p>";
+      totalBox.textContent="";
+      cartCount.textContent="0";
+      return;
+    }
+    let total=0;
+    cart.forEach((item,index)=>{
+      total+=item.price* (item.qty||1);
+      const card=document.createElement("div");
+      card.className="cart-card";
+      card.innerHTML=`
+        <img src="${item.img}" alt="${item.name}" class="cart-img">
+        <div class="cart-details">
+          <div>
+            <div class="cart-name">${item.name}</div>
+            <div class="cart-price">₹${item.price.toFixed(2)}</div>
+          </div>
+          <div class="qty-controls">
+            <button class="qty-btn" data-action="minus" data-index="${index}">-</button>
+            <span>${item.qty||1}</span>
+            <button class="qty-btn" data-action="plus" data-index="${index}">+</button>
+          </div>
+          <button class="btn remove" data-index="${index}">Remove ❌</button>
+        </div>
+      `;
+      cartContainer.appendChild(card);
+    });
+    totalBox.textContent="Total: ₹"+total.toFixed(2);
+    cartCount.textContent=cart.length;
+
+    document.querySelectorAll(".remove").forEach(button=>{
+      button.addEventListener("click",()=>{
+        const index=button.getAttribute("data-index");
+        cart.splice(index,1);
+        localStorage.setItem("cart",JSON.stringify(cart));
+        renderCart();
+      });
+    });
+
+    document.querySelectorAll(".qty-btn").forEach(button=>{
+      button.addEventListener("click",()=>{
+        const index=button.getAttribute("data-index");
+        const action=button.getAttribute("data-action");
+        let qty=cart[index].qty||1;
+        if(action==="plus"){qty++;}
+        else if(action==="minus" && qty>1){qty--;}
+        cart[index].qty=qty;
+        localStorage.setItem("cart",JSON.stringify(cart));
+        renderCart();
+      });
+    });
+  }
+
+  function clearCart(){
+    if(confirm("Clear all items from cart?")){
+      cart=[];
+      localStorage.setItem("cart",JSON.stringify(cart));
+      renderCart();
+    }
+  }
+
+  function proceedCheckout(){
+    if(cart.length===0){
+      alert("Your cart is empty!");
+      return;
+    }
+    // redirect to checkout.html
+    window.location.href = "checkout.html";
+  }
+
+  renderCart();
+
+fetch('http://localhost:5000/api/cart', {
+  method:'POST',
+  headers:{'Content-Type':'application/json'},
+  body:JSON.stringify({user_id:1, product_name:'iPhone', quantity:2})
+})
+
+
+</script>
+</body>
+</html>

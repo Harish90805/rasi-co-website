@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login – RASI & CO</title>
+  <style>
+    .box {
+      width: 400px;
+      background-color: white;
+      border: 2px solid black;
+      padding: 20px;
+      box-sizing: border-box;
+      border-radius: 8px;
+    }
+    main {
+      width: 100%;
+      height: 100vh;
+      background-color: #f8f8f8;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    #h1 {
+      color: rgb(74, 25, 74);
+      font-family: Arial, Helvetica, sans-serif;
+      font-size: 32px;
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .field {
+      display: flex;
+      flex-direction: column;
+      margin-bottom: 15px;
+      position: relative;
+      align-items: center;
+    }
+    .field input {
+      padding: 8px 35px 8px 8px;
+      width: 80%;
+      border: 2px solid #ccc;
+      border-radius: 4px;
+    }
+    .toggle-eye {
+      position: absolute;
+      right: 50px;
+      top: 50%;
+      transform: translateY(-50%);
+      cursor: pointer;
+      font-size: 14px;
+      user-select: none;
+    }
+    .error {
+      color: red;
+      font-size: 12px;
+      margin-top: 4px;
+      height: 12px;
+    }
+    .login {
+      display: flex;
+      justify-content: center;
+      margin: 15px 0;
+    }
+    .bt {
+      background-color: #dd2c2f;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      cursor: pointer;
+      border-radius: 4px;
+      width: 60%;
+    }
+    .signup, .remember {
+      text-align: center;
+      margin-top: 10px;
+      font-size: 14px;
+    }
+    .remember input {
+      margin-right: 5px;
+    }
+    #h1{
+      background-color: #dd2c2f;
+      border: 2px solid black;
+      
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <div class="box">
+      <h1 id="h1" style="color: #f8f8f8;">RASI & CO</h1>
+
+      <div class="field">
+        <input type="text" id="inp1" placeholder="Username or Email ID">
+        <div id="error" class="error"></div>
+      </div>
+
+      <div class="field">
+        <input type="password" id="inp2" placeholder="Password">
+        <span class="toggle-eye" onclick="togglePassword()">👁</span>
+        <div id="error1" class="error"></div>
+      </div>
+
+      <div class="remember">
+        <label><input type="checkbox" id="rememberMe"> Remember me</label>
+      </div>
+
+      <div class="login">
+        <button class="bt" onclick="handlesubmit()">Login</button>
+      </div>
+
+      <div class="signup" >
+        <a href="#" onclick="handleregister()">Sign up</a>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    // Restore username if remembered
+    window.onload = function() {
+      const savedUser = localStorage.getItem('savedUser');
+      if (savedUser) {
+        document.getElementById('inp1').value = savedUser;
+        document.getElementById('rememberMe').checked = true;
+      }
+    };
+
+    // Toggle password visibility
+    function togglePassword() {
+      const passField = document.getElementById("inp2");
+      passField.type = passField.type === "password" ? "text" : "password";
+    }
+
+    // Validate live as typing
+    document.getElementById("inp1").addEventListener("input", function() {
+      if (this.value === "") {
+        document.getElementById("error").innerText = "Username is required";
+        this.style.border = "2px solid red";
+      } else {
+        document.getElementById("error").innerText = "";
+        this.style.border = "2px solid green";
+      }
+    });
+    document.getElementById("inp2").addEventListener("input", function() {
+      if (this.value === "") {
+        document.getElementById("error1").innerText = "Password required";
+        this.style.border = "2px solid red";
+      } else {
+        document.getElementById("error1").innerText = "";
+        this.style.border = "2px solid green";
+      }
+    });
+
+    // Submit on Enter key
+    document.addEventListener("keydown", function(e){
+      if(e.key === "Enter") handlesubmit();
+    });
+
+    function handlesubmit() {
+      var inp1 = document.getElementById("inp1").value.trim();
+      var inp2 = document.getElementById("inp2").value.trim();
+      let valid = true;
+
+      if (inp1 === "") {
+        document.getElementById("error").innerText = "Username is required";
+        document.getElementById("inp1").style.border = "2px solid red";
+        valid = false;
+      }
+      if (inp2 === "") {
+        document.getElementById("error1").innerText = "Password required";
+        document.getElementById("inp2").style.border = "2px solid red";
+        valid = false;
+      }
+
+      // Save username if remember me
+      if (document.getElementById('rememberMe').checked && inp1 !== "") {
+        localStorage.setItem('savedUser', inp1);
+      } else {
+        localStorage.removeItem('savedUser');
+      }
+
+      // Fake login check
+      if (valid) {
+        // Dummy user for demo:
+        if (inp1 === "admin" && inp2 === "1234") {
+          window.location.href = "home.html";
+        } else {
+          alert("Invalid credentials! (Try admin / 1234)");
+        }
+      }
+    }
+    function handleregister(){
+      window.location.href = "signup.html"
+    }
+  </script>
+</body>
+</html>

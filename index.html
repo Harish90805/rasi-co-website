@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>RASI & CO</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Segoe UI',sans-serif;}
+body{background:linear-gradient(to bottom right,#fdfbfb,#ebedee);}
+header{
+  position:sticky;top:0;z-index:1000;
+  background:linear-gradient(90deg,#dd2c2f,#dd2c2f,#dd2c2f);
+  color:white;display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;
+  padding:15px 25px;box-shadow:0 4px 15px rgba(189, 48, 5, 0.4);
+}
+header h1{font-size:28px;font-weight:700;}
+.search-bar{display:flex;gap:05px;align-items:center; justify-content: center; width: 70%;}
+
+
+.search-input,.category-select{
+  padding:8px 12px;border-radius:8px;border:1px solid #ccc;font-size:15px;
+}
+.search-input{width: 220px;}
+.cart,.wishlist-btn{
+  background:white;border:none;color:#d71215;font-weight:600;font-size:15px;
+  padding:6px 12px;border-radius:10px 5px ;cursor:pointer;gap:5px;
+  transition:.3s;
+}
+.cart:hover,.wishlist-btn:hover{background:#ffe6ea;}
+.cart-count,.wishlist-count{
+  background:#f40a35;color:white;border-radius:50%;padding:3px 8px;font-size:13px;font-weight:bold;
+}
+.hero{
+  background:url('https://www.shutterstock.com/image-vector/illustration-website-header-banner-design-600nw-1838594593.jpg') center/cover no-repeat;
+  height:250px;display:flex;align-items:center;justify-content:center;position:relative;text-align:center;
+  
+  background:url('https://www.shutterstock.com/image-vector/illustration-website-header-banner-design-600nw-1838594593.jpg') center/cover no-repeat;
+  height:250px;display:flex;align-items:center;justify-content:center;position:relative;text-align:center;
+}
+.hero::after{content:"";position:absolute;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.4);}
+.hero-content{position:relative;color:white;z-index:1;}
+.hero-content h2{font-size:2rem;margin-bottom:10px;}
+.hero-content .btn{
+  background:white;color:#f80f0f;padding:10px 20px;border-radius:25px;border:none;font-weight:bold;cursor:pointer;transition:.3s;
+}
+.hero-content .btn:hover{background:#f80f0f;color:white;}
+.top-menu{
+  display:flex;justify-content:center;gap:12px;
+  background:#fff;padding:12px;flex-wrap:wrap;
+  box-shadow:0 2px 6px rgba(0,0,0,0.1);
+}
+.top-menu button{
+  background:linear-gradient(90deg,#f80f0f,#f80f0f);
+  border:none;padding:8px 12px;color:white;font-weight:bold;
+  border-radius:20px;cursor:pointer;transition:.3s;
+}
+.top-menu button:hover{background:linear-gradient(90deg,#f80f0f,#f80f0f);}
+.category-container{
+  display:flex;flex-wrap:wrap;justify-content:center;gap:20px;
+  margin:18px 0;padding:0 12px;
+}
+.category{text-align:center;cursor:pointer;}
+.category img{
+  width:120px;height:120px;object-fit:cover;
+  border-radius:50%;border:3px solid ;
+  padding:5px;background:white;transition:.3s;
+}
+.category img:hover{transform:scale(1.08);box-shadow:0 8px 16px rgba(0,0,0,0.2);}
+.category p{margin-top:10px;font-weight:600;color:#444;}
+.product-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));
+  gap:20px;padding:20px;
+}
+.product-card{
+  position:relative;background:rgba(255,255,255,0.95);backdrop-filter:blur(6px);
+  border-radius:15px;box-shadow:0 6px 18px rgba(0,0,0,0.08);overflow:hidden;transition:.3s;
+}
+.product-card:hover{transform:translateY(-6px);box-shadow:0 12px 24px rgba(0,0,0,0.15);}
+.heart-btn{
+  position:absolute;top:10px;right:10px;background:rgba(255,255,255,0.8);border:none;border-radius:50%;
+  width:35px;height:35px;display:flex;align-items:center;justify-content:center;font-size:18px;
+  color:#ff4d6d;cursor:pointer;transition:.3s;
+}
+.heart-btn.active{color:white;background:#ff4d6d;}
+.heart-btn:hover{background:#ffe6ea;}
+.product-img{width:100%;height:160px;object-fit:cover;display:block;background:#f7f7f7}
+.product-details{padding:12px;text-align:center;}
+.product-name{font-size:16px;font-weight:600;margin:8px 0;color:#444;}
+.product-price{font-size:15px;font-weight:bold;color:#f80f0f;margin-bottom:8px;}
+.add-to-cart,.buy-now{
+  background:linear-gradient(90deg,#f80f0f,#f80f0f);color:white;border:none;
+  padding:6px 12px;border-radius:8px;cursor:pointer;transition:.3s;
+  font-size:14px;font-weight:600;margin:3px;
+}
+.add-to-cart:hover,.buy-now:hover{background:linear-gradient(90deg,#f80f0f,#f80f0f);box-shadow:0 4px 12px rgba(255,77,109,.4);}
+footer{
+  background:#343a40;color:#ccc;text-align:center;padding:25px;margin-top:40px;
+}
+footer h3{color:white;margin-bottom:10px;}
+footer p{line-height:1.6;font-size:14px;max-width:800px;margin:0 auto;}
+@media (max-width:600px){
+  .search-input{width:130px}
+  header{padding:12px}
+}
+
+.hero-slide {
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background-size: cover;
+  background-position: center;
+  opacity: 0;
+  transition: opacity 1s ease-in-out;
+  z-index: 0;
+}
+
+.hero-slide.active {
+  opacity: 1;
+  z-index: 1;
+}
+
+.hero-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 30px;
+  color: white;
+  background: rgba(0,0,0,0.3);
+  border: none;
+  border-radius: 50%;
+  width: 40px; height: 40px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2;
+}
+
+.hero-arrow-left { left: 15px; }
+.hero-arrow-right { right: 15px; }
+
+.hero-arrow:hover { background: rgba(0,0,0,0.5); }
+
+.hero-dots {
+  position: absolute;
+  bottom: 15px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+  z-index: 2;
+}
+
+.hero-dot {
+  width: 12px; height: 12px;
+  border-radius: 50%;
+  background: white;
+  opacity: 0.6;
+  cursor: pointer;
+  transition: opacity 0.3s;
+}
+
+.hero-dot.active { opacity: 1; background: #f80f0f; }
+
+
+/* === Responsive overrides === */
+@media (max-width:768px) {
+  header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .search-bar {
+    width: 100%;
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .search-input {
+    width: 100%;
+    font-size: 14px;
+  }
+  .cart, .wishlist-btn {
+    width: 100%;
+    text-align: center;
+    font-size: 14px;
+    padding: 6px 0;
+  }
+  .top-menu {
+    flex-direction: column;
+    gap: 8px;
+  }
+  .top-menu button {
+    width: 100%;
+  }
+  .hero {
+    height: 180px;
+  }
+  .hero-content h2 {
+    font-size: 1.5rem;
+  }
+  .hero-content .btn {
+    padding: 8px 16px;
+    font-size: 14px;
+  }
+  .category img {
+    width: 90px;
+    height: 90px;
+  }
+  .product-grid {
+    grid-template-columns: repeat(auto-fill,minmax(150px,1fr));
+    gap: 12px;
+  }
+  .product-name {
+    font-size: 14px;
+  }
+  .product-price {
+    font-size: 13px;
+  }
+}
+
+/* Larger screen tweak (optional) */
+@media (min-width:769px) {
+  .product-grid {
+    grid-template-columns: repeat(auto-fill,minmax(230px,1fr));
+  }
+}
+
+
+</style>
+</head>
+<body>
+
+<header>
+  <h1>RASI & CO</h1>
+  <div class="search-bar">
+    <input type="text" style="width: 90%;" id="searchInput" class="search-input" placeholder="🔎 Search products..." oninput="simpleSearch(this.value)"></div>
+
+    <div class="c-w">    <button class="cart" onclick="openCart()">🛒 Cart <span id="cart-count" class="cart-count">0</span></button>
+    <button class="wishlist-btn" onclick="openWishlist()">❤️ Wishlist <span id="wishlist-count" class="wishlist-count">0</span></button>
+  </div>
+
+</header>
+
+<section class="hero" id="hero">
+  <div class="hero-content">
+    <h2>Welcome to RASI & CO</h2>
+    <button class="btn" onclick="alert('Start shopping!')">Shop Now</button>
+  </div>
+  <!-- Arrows -->
+  <button class="hero-arrow hero-arrow-left" onclick="prevSlide()">&#10094;</button>
+  <button class="hero-arrow hero-arrow-right" onclick="nextSlide()">&#10095;</button>
+  <!-- Dots -->
+  <div class="hero-dots" id="hero-dots"></div>
+</section>
+
+
+<div class="top-menu">
+  <button onclick="loadCategory('mobiles')">Mobiles</button>
+  <button onclick="loadCategory('ac')">Air Conditioner</button>
+  <button onclick="loadCategory('washing')">Washing Machine</button>
+  <button onclick="loadCategory('fridge')">Fridge</button>
+  <button onclick="loadCategory('tv')">TV</button>
+  <button onclick="loadCategory('furniture')">Furniture</button>
+  <button onclick="loadCategory('kitchen')">Kitchen Essentials</button>
+</div>
+
+<div class="category-container" id="subCategories"></div>
+<div class="product-grid" id="product-container"></div>
+<!-- Add this section BELOW your product grid -->
+<div class="product-grid" id="recently-viewed-container" style="display:none;">
+  <h3 style="width:100%;text-align:center;margin:15px 0;color:#444;">Recently Viewed Products</h3>
+</div>
+
+
+<footer>
+  <h3>ABOUT US</h3>
+  <p>Since 1990, at RASI & CO, we are passionate about bringing the latest and most reliable electronic products.</p>
+</footer>
+
+<script>
+const data = {
+  mobiles: {
+    subs: {
+      "Smartphones": [
+     {name:"I PHONE 13",price:45000,img:"https://vasanthandco.in/UploadedFiles/productimages/20240920014158-713SsA7gftL._SX679_.jpg"},
+     {name:"i phone 15 pro max",price:45000,img:"https://static.toiimg.com/thumb/103628758/103628758.jpg?height=746&width=420&resizemode=76&imgsize=23476"},
+     {name:"I PHONE 16",price:45000,img:"https://vasanthandco.in/UploadedFiles/productimages/20240920014158-713SsA7gftL._SX679_.jpg"},
+     {name:"I PHONE 14",price:3500,img:"https://iplanet.one/cdn/shop/files/iPhone_14_Purple_PDP_Image_Position-1A__WWEN_d684e6e0-4951-44c1-a72b-1077230a9912.jpg?v=1691142450"},
+     {name:"I PHONE 16 PLUS",price:3500,img:"https://m.media-amazon.com/images/I/61BGE6iu4AL._UF1000,1000_QL80_.jpg"},
+     {name:"I PHONE 17",price:3500,img:"https://media-ik.croma.com/prod/https://media.tatacroma.com/Croma%20Assets/Communication/Mobiles/Images/317418_0_meob1I3_T.png?updatedAt=1757529236662"},
+     {name:"SAMSUNG GALAXY A54 5G",price:45000,img:"https://media.tatacroma.com/Croma%20Assets/Communication/Mobiles/Images/270489_0_ntbicm.png"},
+     {name:"SAMSUNG GALAXY A15 5G",price:45000,img:"https://www.myg.in/images/thumbnails/300/300/detailed/101/71jzh9da4TL._SL1500_-removebg-preview.png.png"},
+     {name:"SAMSUNG F14 5G",price:45000,img:"https://images.samsung.com/is/image/samsung/assets/in/galaxy-5g/smartphones/F_mobile.jpg?$ORIGIN_JPG$"},
+     {name:"SAMSUNG S25 ULTRA",price:3500,img:"https://www.myg.in/images/thumbnails/300/300/detailed/107/61isPIHrHgL._SL1500_-removebg-preview.png.png"},
+     {name:"SAMSUNG FLIP 6",price:3500,img:"https://www.themobileindian.com/wp-content/uploads/2024/02/z-flip-6-specs-600x600.jpg"},
+     {name:"SAMSUNG S22 FE",price:3500,img:"https://images.samsung.com/is/image/samsung/p6pim/in/feature/165609164/in-feature--nbsp-543530333?$FB_TYPE_I_JPG$"},
+     {name:"VIVO Y200 5G",price:45000,img:"https://vasanthandco.in/UploadedFiles/productimages/20240622113325-61p9OByM1kL._SX679_.jpg"},
+    {name:"VIVO Y12 5G",price:45000,img:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR7GhWqnBqZFNstKT5LXe-aqzEyJPkwz6NfUrZir6FrJ8Cjm8zYrRxuE5-pHyjyI8mmkpY&usqp=CAU"},
+    {name:"VIVO X100 5G",price:45000,img:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSmbBryDBTclFIRCHEKv1k4peRGKSpFVRIlJg&s"},
+     {name:"REDMI NOTE 13C",price:45000,img:"https://vasanthandco.in/UploadedFiles/productimages/20240711064224-%20%20(1).jpg"},
+    {name:"REDMI 15 5G",price:45000,img:"https://i03.appmifile.com/790_item_in/14/08/2025/aa02cd2515ed88d2589d303e83521063.png?thumb=1&w=500&q=85"},
+    {name:"IQOO 11 5G",price:45000,img:"https://www.godigit.com/content/dam/godigit/directportal/en/iqoo-11-5g-mobile.JPG"},
+    {name:"REALME 9I 5G",price:45000,img:"https://cdn.moglix.com/p/gUvUzK8TeAXbu-xxlarge.jpg"},
+    {name:"MOTO EDGE 50",price:45000,img:"https://www.godigit.com/content/dam/godigit/directportal/en/moto-g85-5g-mobile.JPG"},
+    {name:"CMF 2A 5G",price:45000,img:"https://www.bbassets.com/media/uploads/p/l/40329978_11-nothing-cmf-phone-1-5g-8gb-ram-128gb-black.jpg"},
+    {name:"Nokia 3310",price:3500,img:"https://www.kaiostech.com/wp-content/uploads/Hba846492b23c492aa4b7a961827c87944.jpg_720x720q50.jpg.webp"},
+    {name:"Nokia 3310",price:3500,img:"https://img.clevup.in/301826/1695797136194_119.jpeg?width=600&format=webp"},
+    {name:"Nokia 3310",price:3500,img:"https://www.jiomart.com/images/product/original/rvqkuzi17o/v-o-x-v20-feature-phone-with-2500-mah-battery-2-4-display-dual-sim-gold-product-images-orvqkuzi17o-p609581993-0-202407261209.jpg?im=Resize=(420,420)"},
+    {name:"Nokia 3310",price:3500,img:"https://www.jiomart.com/images/product/original/rvqkuzi17o/v-o-x-v20-feature-phone-with-2500-mah-battery-2-4-display-dual-sim-gold-product-images-orvqkuzi17o-p609581993-0-202407261209.jpg?im=Resize=(420,420)"},
+    {name:"Nokia 3310",price:3500,img:"https://vasanthandco.in/UploadedFiles/productimages/20240920012338-615O-NFQKdL._SX679_.jpg"},
+    {name:"Nokia 3310",price:3500,img:""},
+      {name:"Nokia 3310",price:3500,img:""},
+      {name:"Nokia 3310",price:3500,img:""},
+      {name:"Nokia 3310",price:3500,img:""}
+      ],
+      "Feature Phones":[
+        {name:"Nokia 3310",price:3500,img:""}
+      ],
+      "5G Phones":[
+      {name:"I PHONE 13",price:45000,img:"https://vasanthandco.in/UploadedFiles/productimages/20240920014158-713SsA7gftL._SX679_.jpg"},
+      {name:"REDMI NOTE 13C",price:45000,img:"https://vasanthandco.in/UploadedFiles/productimages/20240711064224-%20%20(1).jpg"},
+      {name:"VIVO Y200 5G",price:45000,img:"https://vasanthandco.in/UploadedFiles/productimages/20240622113325-61p9OByM1kL._SX679_.jpg"},
+      {name:"SAMSUNG F14 5G",price:45000,img:"https://images.samsung.com/is/image/samsung/assets/in/galaxy-5g/smartphones/F_mobile.jpg?$ORIGIN_JPG$"},
+      {name:"IQOO 11 5G",price:45000,img:"https://www.godigit.com/content/dam/godigit/directportal/en/iqoo-11-5g-mobile.JPG"},
+      {name:"REALME 9I 5G",price:45000,img:"https://cdn.moglix.com/p/gUvUzK8TeAXbu-xxlarge.jpg"},
+      {name:"SAMSUNG GALAXY A54 5G",price:45000,img:"https://media.tatacroma.com/Croma%20Assets/Communication/Mobiles/Images/270489_0_ntbicm.png"},
+      {name:"MOTO EDGE 50",price:45000,img:"https://www.godigit.com/content/dam/godigit/directportal/en/moto-g85-5g-mobile.JPG"},
+      {name:"SAMSUNG GALAXY A15 5G",price:45000,img:"https://www.myg.in/images/thumbnails/300/300/detailed/101/71jzh9da4TL._SL1500_-removebg-preview.png.png"},
+      {name:"CMF 2A 5G",price:45000,img:"https://www.bbassets.com/media/uploads/p/l/40329978_11-nothing-cmf-phone-1-5g-8gb-ram-128gb-black.jpg"},
+      {name:"VIVO Y12 5G",price:45000,img:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR7GhWqnBqZFNstKT5LXe-aqzEyJPkwz6NfUrZir6FrJ8Cjm8zYrRxuE5-pHyjyI8mmkpY&usqp=CAU"},
+      {name:"REDMI 15 5G",price:45000,img:"https://i03.appmifile.com/790_item_in/14/08/2025/aa02cd2515ed88d2589d303e83521063.png?thumb=1&w=500&q=85"},
+      {name:"VIVO X100 5G",price:45000,img:"https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSmbBryDBTclFIRCHEKv1k4peRGKSpFVRIlJg&s"},
+      {name:"i phone 15 pro max",price:45000,img:"https://static.toiimg.com/thumb/103628758/103628758.jpg?height=746&width=420&resizemode=76&imgsize=23476"},
+      {name:"I PHONE 16",price:45000,img:"https://vasanthandco.in/UploadedFiles/productimages/20240920014158-713SsA7gftL._SX679_.jpg"}
+
+      ]
+    }
+  },
+  ac: {
+    subs: {
+      "Window AC":[{name:"Voltas Window AC",price:28000,img:"https://img.icons8.com/ios/452/air-conditioner.png"}],
+      "Split AC":[{name:"LG Split AC",price:35000,img:"https://img.icons8.com/ios/452/air-conditioner.png"}],
+      "Cassette AC":[{name:"Daikin Cassette AC",price:45000,img:"https://img.icons8.com/ios/452/air-conditioner.png"}]
+    }
+  },
+  washing: {
+    subs: {
+      "Front Load":[{name:"Samsung Front Load",price:40000,img:"https://img.icons8.com/ios/452/washing-machine.png"}],
+      "Top Load":[{name:"LG Top Load",price:30000,img:"https://img.icons8.com/ios/452/washing-machine.png"}],
+      "Semi-Auto":[{name:"Whirlpool Semi-Auto",price:20000,img:"https://img.icons8.com/ios/452/washing-machine.png"}]
+    }
+  },
+  fridge: {
+    subs: {
+      "Single Door":[{name:"Samsung Single Door",price:20000,img:"https://img.icons8.com/ios/452/fridge.png"}],
+      "Double Door":[{name:"LG Double Door",price:55000,img:"https://img.icons8.com/ios/452/fridge.png"}],
+      "Side by Side":[{name:"Whirlpool Side by Side",price:70000,img:"https://img.icons8.com/ios/452/fridge.png"}]
+    }
+  },
+  tv: {
+    subs: {
+      "LED":[{name:"Sony LED TV",price:45000,img:"https://img.icons8.com/ios/452/tv.png"}],
+      "OLED":[{name:"LG OLED",price:75000,img:"https://img.icons8.com/ios/452/tv.png"}],
+      "Smart TV":[{name:"Samsung Smart TV",price:65000,img:"https://img.icons8.com/ios/452/tv.png"}]
+    }
+  },
+  furniture: {
+    subs: {
+      "Sofas":[{name:"3-Seater Sofa",price:22000,img:"https://images.unsplash.com/photo-1618221668516-3d9f1d3a6a3b?auto=format&fit=crop&w=500&q=60"}],
+      "Beds":[{name:"Queen Bed",price:18000,img:"https://images.unsplash.com/photo-1616627783924-4f27e0f3d1b9?auto=format&fit=crop&w=500&q=60"}],
+      "Dining Sets":[{name:"4-Seater Dining Set",price:15000,img:"https://images.unsplash.com/photo-1600585154340-be6161a56a0c?auto=format&fit=crop&w=500&q=60"}],
+      "cupbords":[{name:"2 door",price:25000,img:"//"}]
+    }
+  },
+  kitchen: {
+    subs: {
+      "Cookware":[{name:"Non-stick Cookware Set",price:3999,img:"https://images.unsplash.com/photo-1600180758890-9e0a6bc491a3?auto=format&fit=crop&w=500&q=60"}],
+      "Appliances":[{name:"Electric Kettle",price:1999,img:"https://images.unsplash.com/photo-1582719478250-5c6a9f0d3b2e?auto=format&fit=crop&w=500&q=60"}],
+      "Storage":[{name:"Food Storage Set",price:899,img:"https://images.unsplash.com/photo-1587019153482-6b9b6a5c9b7a?auto=format&fit=crop&w=500&q=60"}]
+    }
+  }
+};
+
+const subDiv = document.getElementById('subCategories');
+const productDiv = document.getElementById('product-container');
+const cartCount = document.getElementById('cart-count');
+const wishlistCount = document.getElementById('wishlist-count');
+
+let cart = JSON.parse(localStorage.getItem('cart')) || [];
+let wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+cartCount.textContent = cart.length;
+wishlistCount.textContent = wishlist.length;
+
+
+
+
+
+// Hero images
+const heroImages = [
+  'https://www.shutterstock.com/image-vector/illustration-website-header-banner-design-600nw-1838594593.jpg',
+  'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1500&q=80',
+  'https://images.unsplash.com/photo-1557682224-5b8590cd9ec5?auto=format&fit=crop&w=1500&q=80'
+];
+
+const heroSection = document.getElementById('hero');
+const heroDotsContainer = document.getElementById('hero-dots');
+
+let slides = [];
+let currentSlide = 0;
+
+// Create slides and dots dynamically
+heroImages.forEach((img, index) => {
+  const slide = document.createElement('div');
+  slide.className = 'hero-slide' + (index === 0 ? ' active' : '');
+  slide.style.backgroundImage = `url('${img}')`;
+  heroSection.appendChild(slide);
+  slides.push(slide);
+
+  const dot = document.createElement('div');
+  dot.className = 'hero-dot' + (index === 0 ? ' active' : '');
+  dot.addEventListener('click', () => goToSlide(index));
+  heroDotsContainer.appendChild(dot);
+});
+
+const dots = document.querySelectorAll('.hero-dot');
+
+function showSlide(index) {
+  slides.forEach(s => s.classList.remove('active'));
+  dots.forEach(d => d.classList.remove('active'));
+  slides[index].classList.add('active');
+  dots[index].classList.add('active');
+  currentSlide = index;
+}
+
+function nextSlide() {
+  showSlide((currentSlide + 1) % slides.length);
+}
+
+function prevSlide() {
+  showSlide((currentSlide - 1 + slides.length) % slides.length);
+}
+
+function goToSlide(index) {
+  showSlide(index);
+}
+
+// Auto slide every 5 seconds
+setInterval(nextSlide, 5000);
+
+// Swipe support for mobile
+let touchStartX = 0;
+let touchEndX = 0;
+
+heroSection.addEventListener('touchstart', e => { touchStartX = e.changedTouches[0].screenX; });
+heroSection.addEventListener('touchend', e => {
+  touchEndX = e.changedTouches[0].screenX;
+  if(touchEndX < touchStartX - 50) nextSlide();
+  if(touchEndX > touchStartX + 50) prevSlide();
+});
+
+
+// Load category -> shows subcategories on this page
+function loadCategory(cat){
+  if(!data[cat]) return;
+  subDiv.innerHTML = '';
+  productDiv.innerHTML = '';
+  Object.keys(data[cat].subs).forEach(sub => {
+    // when a user clicks the circle it goes to ss.html
+    subDiv.innerHTML += `\n      <div class="category" onclick="goToSubCategory('${cat}','${sub}')">\n        <img src="https://img.icons8.com/ios/452/circled.png" alt="${sub}"><p>${sub}</p>\n      </div>`;
+  });
+}
+
+// Redirect to ss.html with selected category + subcategory stored in localStorage
+function goToSubCategory(cat, sub){
+  localStorage.setItem('selectedCategory', cat);
+  localStorage.setItem('selectedSubCategory', sub);
+  // optional: clear any selected product index
+  localStorage.removeItem('selectedProductIndex');
+  window.location.href = 'ss.html';
+}
+
+// Render products on this page (useful for ss.html as well)
+function loadProducts(cat, sub){
+  if(!data[cat] || !data[cat].subs[sub]){
+    productDiv.innerHTML = '<p style="padding:20px">No products found.</p>';
+    return;
+  }
+  productDiv.innerHTML = '';
+  data[cat].subs[sub].forEach((p, i) => {
+    const heartActive = wishlist.find(w => w.name === p.name) ? 'active' : '';
+    const img = p.img && p.img.trim() ? p.img : 'https://via.placeholder.com/300x200?text=No+Image';
+    productDiv.innerHTML += `\n    <div class="product-card">\n      <button class="heart-btn ${heartActive}" onclick="toggleWishlist('${cat}','${sub}',${i})">❤️</button>\n      <img src="${img}" class="product-img" alt="${p.name}">\n      <div class="product-details">\n        <div class="product-name">${p.name}</div>\n        <div class="product-price">₹${p.price}</div>\n        <button class="add-to-cart" onclick="addToCart('${cat}','${sub}',${i})">Add to Cart</button>\n        <button class="buy-now" onclick="buyNow('${cat}','${sub}',${i})">Buy Now</button>\n      </div>\n    </div>`;
+  });
+}
+
+function addToCart(cat, sub, i){
+  const prod = data[cat].subs[sub][i];
+  cart.push(prod);
+  localStorage.setItem('cart', JSON.stringify(cart));
+  cartCount.textContent = cart.length;
+  alert(prod.name + ' added to cart!');
+}
+function buyNow(cat, sub, i){
+  addToCart(cat, sub, i);
+  window.location.href = 'cart.html';
+}
+
+function toggleWishlist(cat, sub, i){
+  const prod = data[cat].subs[sub][i];
+  const idx = wishlist.findIndex(w => w.name === prod.name);
+  if(idx >= 0) wishlist.splice(idx,1); else wishlist.push(prod);
+  localStorage.setItem('wishlist', JSON.stringify(wishlist));
+  wishlistCount.textContent = wishlist.length;
+  // if currently viewing the same subcategory, re-render to update heart state
+  const currentCat = localStorage.getItem('selectedCategory');
+  const currentSub = localStorage.getItem('selectedSubCategory');
+  if(currentCat === cat && currentSub === sub) loadProducts(cat, sub);
+}
+
+function openCart(){ window.location.href = 'cart.html'; }
+function openWishlist(){ window.location.href = 'wishlist.html'; }
+
+// Simple search over all products (client-side)
+function simpleSearch(q){
+  const query = (q||'').trim().toLowerCase();
+  if(!query){ productDiv.innerHTML = ''; subDiv.innerHTML = ''; return; }
+  const results = [];
+  Object.keys(data).forEach(cat => {
+    Object.keys(data[cat].subs).forEach(sub => {
+      data[cat].subs[sub].forEach(p => {
+        if(p.name && p.name.toLowerCase().includes(query)){
+          results.push({...p, category:cat, sub:sub});
+        }
+      });
+    });
+  });
+  if(results.length === 0){ productDiv.innerHTML = '<p style="padding:20px">No products found for "'+query+'".</p>'; return; }
+  // show results
+  subDiv.innerHTML = `<div style="width:100%;padding:12px;text-align:center;font-weight:700;color:#444">Search results for "${query}"</div>`;
+  productDiv.innerHTML = '';
+  results.forEach((p,i) => {
+    const img = p.img && p.img.trim() ? p.img : 'https://via.placeholder.com/300x200?text=No+Image';
+    productDiv.innerHTML += `\n    <div class="product-card">\n      <img src="${img}" class="product-img" alt="${p.name}">\n      <div class="product-details">\n        <div class="product-name">${p.name}</div>\n        <div class="product-price">₹${p.price}</div>\n      </div>\n    </div>`;
+  });
+}
+
+
+
+// Recently viewed products stored in localStorage
+let recentlyViewed = JSON.parse(localStorage.getItem('recentlyViewed')) || [];
+
+// Whenever a user views a product (you can trigger this in loadProducts)
+function addToRecentlyViewed(prod){
+  // Avoid duplicates
+  recentlyViewed = recentlyViewed.filter(p => p.name !== prod.name);
+  recentlyViewed.unshift(prod); // newest first
+  if(recentlyViewed.length > 6) recentlyViewed.pop(); // keep max 6
+  localStorage.setItem('recentlyViewed', JSON.stringify(recentlyViewed));
+  renderRecentlyViewed();
+}
+
+// Render recently viewed products
+function renderRecentlyViewed(){
+  const rvDiv = document.getElementById('recently-viewed-container');
+  if(recentlyViewed.length === 0){
+    rvDiv.style.display = 'none';
+    return;
+  }
+  rvDiv.style.display = 'grid';
+  rvDiv.style.gridTemplateColumns = 'repeat(auto-fill,minmax(230px,1fr))';
+  rvDiv.style.gap = '20px';
+  rvDiv.innerHTML = '<h3 style="width:100%;text-align:center;margin:15px 0;color:#444;">Recently Viewed Products</h3>';
+  recentlyViewed.forEach(p => {
+    const img = p.img && p.img.trim() ? p.img : 'https://via.placeholder.com/300x200?text=No+Image';
+    rvDiv.innerHTML += `
+      <div class="product-card">
+        <img src="${img}" class="product-img" alt="${p.name}">
+        <div class="product-details">
+          <div class="product-name">${p.name}</div>
+          <div class="product-price">₹${p.price}</div>
+          <button class="add-to-cart" onclick="addToCart('${p.category}','${p.sub}',${0})">Add to Cart</button>
+        </div>
+      </div>`;
+  });
+}
+
+// Modify loadProducts to add products to recently viewed when clicked
+function loadProducts(cat, sub){
+  if(!data[cat] || !data[cat].subs[sub]){
+    productDiv.innerHTML = '<p style="padding:20px">No products found.</p>';
+    return;
+  }
+  productDiv.innerHTML = '';
+  data[cat].subs[sub].forEach((p, i) => {
+    const heartActive = wishlist.find(w => w.name === p.name) ? 'active' : '';
+    const img = p.img && p.img.trim() ? p.img : 'https://via.placeholder.com/300x200?text=No+Image';
+    productDiv.innerHTML += `
+      <div class="product-card" onclick="addToRecentlyViewed({...p,category:'${cat}',sub:'${sub}'})">
+        <button class="heart-btn ${heartActive}" onclick="event.stopPropagation(); toggleWishlist('${cat}','${sub}',${i})">❤️</button>
+        <img src="${img}" class="product-img" alt="${p.name}">
+        <div class="product-details">
+          <div class="product-name">${p.name}</div>
+          <div class="product-price">₹${p.price}</div>
+          <button class="add-to-cart" onclick="event.stopPropagation(); addToCart('${cat}','${sub}',${i})">Add to Cart</button>
+          <button class="buy-now" onclick="event.stopPropagation(); buyNow('${cat}','${sub}',${i})">Buy Now</button>
+        </div>
+      </div>`;
+  });
+}
+
+
+  
+
+  // Call renderRecentlyViewed on page load
+  window.addEventListener('DOMContentLoaded', () => {
+    renderRecentlyViewed();
+
+    // if you are on ss.html and have stored selected category/subcategory:
+    const cat = localStorage.getItem('selectedCategory');
+    const sub = localStorage.getItem('selectedSubCategory');
+    if (cat && sub) {
+      loadProducts(cat, sub);
+    }
+  });
+
+
+
+
+// On page load: optionally load a default category
+window.addEventListener('DOMContentLoaded', () => {
+  // show default category (mobiles) so subcategories appear
+  loadCategory('mobiles');
+});
+
+  
+
+</script>
+</body>
+</html>

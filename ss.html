@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>RASI & CO</title>
+<style>
+* { box-sizing: border-box; margin:0; padding:0; font-family:'Segoe UI', sans-serif; }
+body { background:linear-gradient(to bottom right, #fafafa, #f0f4f7); color:#333; }
+
+/* Header */
+header {
+  display:flex; justify-content:space-between; align-items:center;
+  padding:15px 20px; background:#fff;
+  box-shadow:0 2px 12px rgba(0,0,0,0.1);
+  position:sticky; top:0; z-index:100;
+  flex-wrap:wrap;
+}
+header h1 { color:#d32f2f; font-size:26px; font-weight:bold; letter-spacing:1px; margin-bottom:8px; }
+
+nav ul { list-style:none; display:flex; gap:15px; flex-wrap:wrap; }
+nav ul li {
+  cursor:pointer; padding:10px 15px; font-size:16px;
+  color:#444; border-radius:6px; transition: all 0.3s ease;
+}
+nav ul li:hover { background:#ffeaea; color:#d32f2f; }
+nav ul li.active {
+  color:#fff; background:#d32f2f;
+  box-shadow:0 4px 10px rgba(211,47,47,0.4);
+}
+
+.header-buttons {
+  display:flex; gap:12px; flex-wrap:wrap; margin-top:5px;
+}
+.top-btn {
+  padding:8px 14px;
+  border:2px solid #d32f2f;
+  border-radius:8px;
+  background:#fff;
+  color:#d32f2f;
+  font-weight:bold;
+  cursor:pointer;
+  transition:all 0.3s ease;
+}
+.top-btn:hover {
+  background:#d32f2f;
+  color:#fff;
+  box-shadow:0 4px 12px rgba(211,47,47,0.4);
+  transform:translateY(-2px);
+}
+
+/* Return Home Button */
+.home-btn-main {
+  display:inline-block;
+  margin-bottom:20px;
+  cursor:pointer;
+  color:#d32f2f;
+  font-weight:bold;
+  text-decoration:underline;
+}
+
+/* Category container */
+.category-container { padding:40px 8%; }
+.category-container h2 { margin-bottom:25px; font-size:26px; color:#222; }
+
+/* Filters */
+.filters {
+  display:flex; flex-wrap:wrap; gap:15px; margin-bottom:25px;
+  align-items:center;
+}
+.filters input, .filters select {
+  padding:10px 15px; font-size:15px;
+  border:1px solid #ccc; border-radius:8px;
+  outline:none; transition: all 0.3s ease;
+}
+.filters input:focus, .filters select:focus {
+  border-color:#d32f2f; box-shadow:0 0 6px rgba(211,47,47,0.3);
+}
+
+/* Grid styling */
+.grid {
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px,1fr));
+  gap:25px;
+}
+
+/* Card */
+.card {
+  position:relative; overflow:hidden;
+  border-radius:15px; background:#fff;
+  box-shadow:0 4px 15px rgba(0,0,0,0.1);
+  transform:translateY(0); transition: all 0.35s ease;
+  cursor:pointer;
+  display:flex; flex-direction:column; justify-content:space-between;
+}
+.card:hover {
+  transform:translateY(-8px) scale(1.02);
+  box-shadow:0 8px 25px rgba(0,0,0,0.2);
+}
+.card img {
+  width:100%; height:180px; object-fit:cover;
+  display:block; border-radius:15px 15px 0 0;
+  transition:transform 0.4s ease;
+}
+.card:hover img { transform:scale(1.1); }
+
+.card-content { padding:15px; }
+.card-content h3 { font-size:17px; font-weight:600; margin-bottom:5px; }
+.price { font-size:16px; color:#d32f2f; font-weight:bold; margin-bottom:8px; }
+.reviews { font-size:13px; color:#555; margin-bottom:10px; }
+.reviews span.star { color:#fbc02d; }
+.card-actions { display:flex; gap:10px; margin-top:auto; }
+.card-actions button { flex:1; padding:8px 10px; font-size:14px; border:none; border-radius:6px; cursor:pointer; transition:0.3s; }
+.add-cart { background:#f0f0f0; }
+.add-cart:hover { background:#ddd; }
+.buy-now { background:#d32f2f; color:#fff; }
+.buy-now:hover { background:#b71c1c; }
+
+/* Wishlist heart */
+.wishlist-heart {
+  position:absolute;
+  top:10px;
+  right:10px;
+  font-size:20px;
+  color:#aaa;
+  background:#fff;
+  border-radius:50%;
+  width:32px; height:32px;
+  display:flex; justify-content:center; align-items:center;
+  cursor:pointer;
+  transition:0.3s;
+  box-shadow:0 2px 4px rgba(0,0,0,0.1);
+  z-index:2;
+}
+.wishlist-heart.added { color:#d32f2f; }
+
+/* Detail Page */
+.detail-page { display:none; padding:40px 8%; animation: fadeIn 0.5s ease-in; }
+.detail-card { display:flex; gap:30px; align-items:flex-start; background:#fff; padding:25px; border-radius:15px; box-shadow:0 4px 20px rgba(0,0,0,0.15); flex-wrap:wrap; }
+.detail-card img { width:400px; height:350px; object-fit:cover; border-radius:12px; }
+.detail-info { flex:1; }
+.detail-info h2 { font-size:28px; margin-bottom:15px; }
+.detail-info p { font-size:16px; margin:8px 0; }
+.detail-info .price { font-size:24px; }
+.buy-btn { padding:12px 25px; font-size:18px; border:none; border-radius:8px; background:#d32f2f; color:#fff; cursor:pointer; transition:0.3s; }
+.buy-btn:hover { background:#b71c1c; }
+.back-btn {
+  display:inline-block; margin-top:20px; cursor:pointer;
+  color:#d32f2f; font-weight:bold; text-decoration:none;
+  padding:8px 16px; border:2px solid #d32f2f; border-radius:8px;
+  transition:all 0.3s ease;
+}
+.back-btn:hover {
+  background:#d32f2f; color:#fff;
+  box-shadow:0 4px 12px rgba(211,47,47,0.4);
+  transform:translateY(-2px);
+}
+
+/* Recently Viewed */
+.recently-viewed { margin-top:50px; }
+.recently-viewed h3 { margin-bottom:20px; font-size:22px; color:#333; }
+.recently-viewed .grid { gap:15px; }
+
+/* Pagination */
+.pagination { margin-top:25px; text-align:center; }
+.pagination button { margin:0 5px; padding:8px 14px; border:none; border-radius:6px; cursor:pointer; background:#f0f0f0; transition:0.3s; }
+.pagination button.active { background:#d32f2f; color:#fff; }
+
+/* Fade animation */
+.fade { animation: fadeIn 0.5s ease-in; }
+@keyframes fadeIn { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
+
+/* Return Home Button with hover animation */
+.home-btn-main {
+  display:inline-block; margin-top:20px; cursor:pointer;
+  color:#d32f2f; font-weight:bold; text-decoration:none;
+  padding:8px 16px; border:2px solid #d32f2f; border-radius:8px;
+  transition: all 0.3s ease; background:#fff;
+}
+.home-btn-main:hover {
+  background:#d32f2f; color:#fff;
+  box-shadow:0 4px 12px rgba(211,47,47,0.4);
+  transform:translateY(-3px);
+
+
+/* === Responsive overrides for mobile === */
+@media (max-width:768px) {
+  header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  nav ul {
+    flex-direction: column;
+    width: 100%;
+    gap: 6px;
+  }
+
+  nav ul li {
+    width: 100%;
+    text-align: left;
+    padding: 8px 12px;
+  }
+
+  .header-buttons {
+    width: 100%;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 10px;
+  }
+
+  .top-btn {
+    width: 100%;
+    text-align: center;
+    font-size: 14px;
+    padding: 6px 0;
+  }
+
+  .category-container {
+    padding: 20px 5%;
+  }
+
+  .category-container h2 {
+    font-size: 22px;
+  }
+
+  .filters {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .filters input,
+  .filters select {
+    width: 100%;
+    font-size: 14px;
+  }
+
+  .grid {
+    grid-template-columns: repeat(auto-fill,minmax(160px,1fr));
+    gap: 15px;
+  }
+
+  .card img {
+    height: 140px;
+  }
+
+  .card-content h3 {
+    font-size: 15px;
+  }
+
+  .price {
+    font-size: 14px;
+  }
+
+  .detail-card {
+    flex-direction: column;
+    align-items: center;
+    padding: 15px;
+  }
+
+  .detail-card img {
+    width: 100%;
+    height: auto;
+    max-width: 350px;
+  }
+
+  .detail-info h2 {
+    font-size: 22px;
+  }
+
+  .detail-info p {
+    font-size: 15px;
+  }
+
+  .detail-info .price {
+    font-size: 20px;
+  }
+
+  .buy-btn {
+    width: 100%;
+    font-size: 16px;
+    padding: 10px;
+  }
+
+  .back-btn,
+  .home-btn-main {
+    width: 100%;
+    text-align: center;
+    padding: 10px;
+    font-size: 14px;
+  }
+
+  .recently-viewed h3 {
+    font-size: 18px;
+  }
+}
+
+/* Optional: tweak grid for bigger screens */
+@media (min-width:769px) {
+  .grid {
+    grid-template-columns: repeat(auto-fill,minmax(250px,1fr));
+  }
+}
+
+
+}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>RASI & CO</h1>
+  <nav>
+    <ul>
+      <li data-cat="ac" class="active" onclick="showCategory('ac')">AC</li>
+      <li data-cat="mobiles" onclick="showCategory('mobiles')">Mobiles</li>
+      <li data-cat="tv" onclick="showCategory('tv')">TV</li>
+      <li data-cat="furniture" onclick="showCategory('furniture')">Furniture</li>
+      <li data-cat="washing" onclick="showCategory('washing')">Washing Machine</li>
+    </ul>
+  </nav>
+  <div class="header-buttons">
+    <button class="top-btn" onclick="goToCart()">🛒 Cart (<span id="cartCount">0</span>)</button>
+    <button class="top-btn" onclick="goToWishlist()">♥ Wishlist (<span id="wishlistCount">0</span>)</button>
+  </div>
+</header>
+
+<div class="category-container" id="listPage">
+  <div class="home-btn-main" onclick="returnToHome()">Return to Home</div>
+  <h2 id="categoryTitle">Shop by Category – AC</h2>
+  <div class="filters">
+    <input type="text" id="searchBox" placeholder="Search products...">
+    <select id="priceFilter">
+      <option value="">Filter by Price</option>
+      <option value="low">Below ₹20,000</option>
+      <option value="mid">₹20,000 - ₹50,000</option>
+      <option value="high">Above ₹50,000</option>
+    </select>
+    <select id="brandFilter"></select>
+    <select id="sortFilter">
+      <option value="">Sort by</option>
+      <option value="low-high">Price: Low to High</option>
+      <option value="high-low">Price: High to Low</option>
+      <option value="name">Name A-Z</option>
+    </select>
+  </div>
+
+  <div id="categoryGrid" class="grid"></div>
+  <div class="pagination" id="pagination"></div>
+
+  <div class="recently-viewed">
+    <h3>Recently Viewed Products</h3>
+    <div id="recentGrid" class="grid"></div>
+  </div>
+</div>
+
+<div class="detail-page" id="detailPage">
+  <div class="detail-card">
+    <img id="detailImg" src="" alt="">
+    <div class="detail-info">
+      <h2 id="detailName"></h2>
+      <p><strong>Brand:</strong> <span id="detailBrand"></span></p>
+      <p class="price" id="detailPrice"></p>
+      <p id="detailDesc"></p>
+      <button class="buy-btn" onclick="buyNowDetail()">Buy Now</button>
+      <div class="back-btn" onclick="backToList()">← Back to Products</div>
+    </div>
+  </div>
+</div>
+
+<script>
+let cart = JSON.parse(localStorage.getItem('cart')) || [];
+let wishlist = JSON.parse(localStorage.getItem('wishlist')) || [];
+let recentlyViewed = JSON.parse(localStorage.getItem('recentlyViewed')) || [];
+
+function generateProducts(name, brands, minPrice, maxPrice) {
+  const items = [];
+  for (let i = 1; i <= 30; i++) {
+    const brand = brands[Math.floor(Math.random()*brands.length)];
+    const price = Math.floor(Math.random()*(maxPrice-minPrice+1))+minPrice;
+    const color = Math.floor(Math.random()*900)+100;
+    const rating = (Math.random()*(5-3)+3).toFixed(1);
+    const reviews = Math.floor(Math.random()*200)+20;
+    items.push({id:`${name}-${i}`, name:`${name} ${i}`, brand:brand, price:price,
+      desc:`${name} ${i} is a high-quality product from ${brand}.`,
+      img:`https://dummyimage.com/600x400/${color}/fff&text=${encodeURIComponent(name+' '+i)}`,
+      rating:rating, reviews:reviews
+    });
+  }
+  return items;
+}
+
+const categories = {
+  ac: generateProducts('AC', ['LG','Samsung','Sony'], 18000, 60000),
+  mobiles: generateProducts('Mobile', ['Samsung','LG','Sony'], 5000, 70000),
+  tv: generateProducts('TV', ['LG','Samsung','Sony'], 15000, 90000),
+  furniture: generateProducts('Furniture', ['Whirlpool','LG','Samsung'], 10000, 50000),
+  washing: generateProducts('Washing Machine', ['Samsung','LG','Whirlpool'], 12000, 40000)
+};
+
+let currentCategory='ac', currentPage=1, itemsPerPage=9, currentDetailItem=null;
+
+function showCategory(cat){
+  currentCategory=cat; currentPage=1;
+  document.querySelectorAll('nav ul li').forEach(li=>li.classList.toggle('active', li.dataset.cat===cat));
+  const title = cat==='washing'?'Washing Machine':(cat==='ac'?'AC':cat.charAt(0).toUpperCase()+cat.slice(1));
+  document.getElementById('categoryTitle').innerText=`Shop by Category – ${title}`;
+  populateBrandFilter(); renderProducts();
+  document.getElementById('listPage').style.display='block';
+  document.getElementById('detailPage').style.display='none';
+}
+
+function populateBrandFilter(){
+  const brands = [...new Set(categories[currentCategory].map(p=>p.brand))];
+  const brandFilter=document.getElementById('brandFilter');
+  brandFilter.innerHTML='<option value="">Filter by Brand</option>'+brands.map(b=>`<option value="${b}">${b}</option>`).join('');
+}
+
+function renderProducts(){
+  const grid=document.getElementById('categoryGrid');
+  grid.innerHTML='';
+  const search=document.getElementById('searchBox').value.toLowerCase();
+  const price=document.getElementById('priceFilter').value;
+  const brand=document.getElementById('brandFilter').value;
+  const sort=document.getElementById('sortFilter').value;
+
+  let products=(categories[currentCategory]||[]).filter(item=>
+    item.name.toLowerCase().includes(search)&&
+    (brand===""||item.brand===brand)&&
+    (price===""||(price==="low"&&item.price<20000)||(price==="mid"&&item.price>=20000&&item.price<=50000)||(price==="high"&&item.price>50000))
+  );
+
+  if(sort==='low-high') products.sort((a,b)=>a.price-b.price);
+  if(sort==='high-low') products.sort((a,b)=>b.price-a.price);
+  if(sort==='name') products.sort((a,b)=>a.name.localeCompare(b.name));
+
+  const start=(currentPage-1)*itemsPerPage; const end=start+itemsPerPage;
+  const pageProducts=products.slice(start,end);
+
+  pageProducts.forEach(item=>{
+    const div=document.createElement('div'); div.className='card fade';
+    const isWished=wishlist.some(w=>w.id===item.id);
+    div.innerHTML=`
+      <div class="wishlist-heart ${isWished?'added':''}" onclick="toggleWishlist(event,'${item.id}')">♥</div>
+      <img src="${item.img}" alt="${item.name}" onclick="showDetail(${JSON.stringify(item).replace(/"/g,'&quot;')})">
+      <div class="card-content">
+        <h3>${item.name}</h3>
+        <div class="price">₹${item.price.toLocaleString('en-IN')}</div>
+        <div class="reviews">${'★'.repeat(Math.floor(item.rating))}<span class="star">${'★'.repeat(5-Math.floor(item.rating))}</span> (${item.reviews} reviews)</div>
+        <div class="card-actions">
+          <button class="add-cart" onclick="addDirectToCart(event,'${item.id}')">Add to Cart</button>
+          <button class="buy-now" onclick="buyNow(event,'${item.id}')">Buy Now</button>
+        </div>
+      </div>`;
+    grid.appendChild(div);
+  });
+  renderPagination(products.length);
+  renderRecentlyViewed();
+  updateHeaderCounts();
+}
+
+function toggleWishlist(e,id){
+  e.stopPropagation();
+  const idx=wishlist.findIndex(w=>w.id===id);
+  if(idx>-1){ wishlist.splice(idx,1); }
+  else{ const product=categories[currentCategory].find(p=>p.id===id); wishlist.push(product); }
+  localStorage.setItem('wishlist',JSON.stringify(wishlist));
+  renderProducts();
+}
+
+function renderPagination(totalItems){
+  const pagination=document.getElementById('pagination'); pagination.innerHTML='';
+  const totalPages=Math.ceil(totalItems/itemsPerPage);
+  for(let i=1;i<=totalPages;i++){
+    const btn=document.createElement('button'); btn.innerText=i;
+    btn.classList.toggle('active', i===currentPage);
+    btn.onclick=()=>{ currentPage=i; renderProducts(); };
+    pagination.appendChild(btn);
+  }
+}
+
+function showDetail(item){
+  currentDetailItem=item;
+  document.getElementById('listPage').style.display='none';
+  document.getElementById('detailPage').style.display='block';
+  document.getElementById('detailImg').src=item.img;
+  document.getElementById('detailName').innerText=item.name;
+  document.getElementById('detailBrand').innerText=item.brand;
+  document.getElementById('detailPrice').innerText=`₹${item.price.toLocaleString('en-IN')}`;
+  document.getElementById('detailDesc').innerText=item.desc;
+
+  recentlyViewed = recentlyViewed.filter(p => p.id !== item.id);
+  recentlyViewed.unshift(item);
+  if(recentlyViewed.length>6) recentlyViewed.pop();
+  localStorage.setItem('recentlyViewed', JSON.stringify(recentlyViewed));
+}
+
+function renderRecentlyViewed(){
+  const recentGrid=document.getElementById('recentGrid'); recentGrid.innerHTML='';
+  recentlyViewed.forEach(item=>{
+    const div=document.createElement('div'); div.className='card fade';
+    div.innerHTML=`
+      <img src="${item.img}" alt="${item.name}" onclick="showDetail(${JSON.stringify(item).replace(/"/g,'&quot;')})">
+      <div class="card-content">
+        <h3>${item.name}</h3>
+        <div class="price">₹${item.price.toLocaleString('en-IN')}</div>
+      </div>`;
+    recentGrid.appendChild(div);
+  });
+}
+
+function backToList(){ document.getElementById('listPage').style.display='block'; document.getElementById('detailPage').style.display='none'; }
+function returnToHome(){ window.location.href='home.html'; }
+
+function addToCart(){ if(currentDetailItem){ cart.push(currentDetailItem); localStorage.setItem('cart',JSON.stringify(cart)); updateHeaderCounts(); } }
+function addDirectToCart(e,id){ e.stopPropagation(); const product=categories[currentCategory].find(p=>p.id===id); cart.push(product); localStorage.setItem('cart',JSON.stringify(cart)); updateHeaderCounts(); }
+
+// Buy Now from product card
+function buyNow(e, id) {
+  e.stopPropagation();
+  const product = categories[currentCategory].find(p => p.id === id);
+  cart.push(product); localStorage.setItem('cart', JSON.stringify(cart));
+  updateHeaderCounts();
+  window.location.href = 'checkout.html';
+}
+
+// Buy Now from detail page
+function buyNowDetail() {
+  if (currentDetailItem) {
+    cart.push(currentDetailItem); localStorage.setItem('cart', JSON.stringify(cart));
+    updateHeaderCounts();
+    window.location.href = 'checkout.html';
+  }
+}
+
+function updateHeaderCounts(){
+  document.getElementById('cartCount').innerText = cart.length;
+  document.getElementById('wishlistCount').innerText = wishlist.length;
+}
+
+function goToCart(){ window.location.href='cart.html'; }
+function goToWishlist(){ window.location.href='wishlist.html'; }
+
+document.getElementById('searchBox').addEventListener('input',renderProducts);
+document.getElementById('priceFilter').addEventListener('change',renderProducts);
+document.getElementById('brandFilter').addEventListener('change',renderProducts);
+document.getElementById('sortFilter').addEventListener('change',renderProducts);
+
+showCategory('ac');
+</script>
+</body>
+</html>

@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Create Account</title>
+<style>
+    * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    body {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background: linear-gradient(135deg, #d3dce4, #f02222);
+    }
+
+    .container {
+        background: #fff;
+        padding: 40px 30px;
+        border-radius: 15px;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        width: 350px;
+    }
+
+    h2 {
+        text-align: center;
+        margin-bottom: 25px;
+        color: #333;
+    }
+
+    .input-group {
+        position: relative;
+        margin-bottom: 20px;
+    }
+
+    .input-group input {
+        width: 100%;
+        padding: 12px 40px 12px 15px;
+        border-radius: 8px;
+        border: 1px solid #ccc;
+        outline: none;
+        transition: all 0.3s ease;
+        font-size: 16px;
+    }
+
+    .input-group input:focus {
+        border-color: #d3241e;
+        box-shadow: 0 0 8px rgba(36, 123, 238, 0.3);
+    }
+
+    .input-group p {
+        color: red;
+        font-size: 13px;
+        margin-top: 5px;
+    }
+
+    .toggle-password {
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        cursor: pointer;
+        font-size: 18px;
+        color: #d53422;
+    }
+
+    button {
+        width: 100%;
+        padding: 12px;
+        background: #d61515;
+        color: #fff;
+        font-size: 16px;
+        font-weight: bold;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background 0.3s ease;
+    }
+
+    button:hover {
+        background: #520e0e;
+    }
+
+    @media(max-width: 400px) {
+        .container {
+            width: 90%;
+            padding: 30px 20px;
+        }
+    }
+</style>
+</head>
+<body>
+    <div class="container">
+        <h2>Create Account</h2>
+        <div class="input-group">
+            <input type="text" placeholder="Enter username" id="inp">
+            <p id="error"></p>
+        </div>
+        <div class="input-group">
+            <input type="text" placeholder="Enter mobile number" id="inp1">
+            <p id="mobile"></p>
+        </div>
+        <div class="input-group">
+            <input type="text" placeholder="Email" id="inp2">
+            <p id="email"></p>
+        </div>
+        <div class="input-group">
+            <input type="password" placeholder="Enter password" id="inp3">
+            <span class="toggle-password" onclick="togglePassword('inp3')">&#128065;</span>
+            <p id="error1"></p>
+        </div>
+        <div class="input-group">
+            <input type="password" placeholder="Confirm password" id="inp4">
+            <span class="toggle-password" onclick="togglePassword('inp4')">&#128065;</span>
+            <p id="error2"></p>
+        </div>
+        <button id="button" onclick="handleacc()">CREATE ACCOUNT</button>
+    </div>
+
+<script>
+function togglePassword(id) {
+    const input = document.getElementById(id);
+    input.type = input.type === "password" ? "text" : "password";
+}
+
+function handleacc() {
+    var a = document.getElementById("inp").value.trim();
+    var b = document.getElementById("inp1").value.trim();
+    var c = document.getElementById("inp2").value.trim();
+    var d = document.getElementById("inp3").value;
+    var e = document.getElementById("inp4").value;
+
+    // Reset all errors
+    document.getElementById("error").innerHTML = "";
+    document.getElementById("mobile").innerHTML = "";
+    document.getElementById("email").innerHTML = "";
+    document.getElementById("error1").innerHTML = "";
+    document.getElementById("error2").innerHTML = "";
+
+    let valid = true;
+
+    if(a === "") {
+        document.getElementById("error").innerHTML = "Username is required";
+        valid = false;
+    }
+
+    if(b === "" || !/^\d{10}$/.test(b)) {
+        document.getElementById("mobile").innerHTML = "Enter valid 10-digit mobile number";
+        valid = false;
+    }
+
+    if(c === "" || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(c)) {
+        document.getElementById("email").innerHTML = "Enter a valid email";
+        valid = false;
+    }
+
+    if(d === "") {
+        document.getElementById("error1").innerHTML = "Password is required";
+        valid = false;
+    }
+
+    if(e === "" || d !== e) {
+        document.getElementById("error2").innerHTML = d !== e ? "Passwords do not match" : "Confirm password required";
+        valid = false;
+    }
+
+    if(valid) {
+        alert("Account created successfully!");
+        window.location.href = "login.html";
+    }
+}
+
+
+fetch('http://localhost:5000/api/signup', {
+  method: 'POST',
+  headers: {'Content-Type': 'application/json'},
+  body: JSON.stringify({name:'John', email:'john@test.com', password:'1234'})
+})
+
+</script>
+</body>
+</html>

@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>My Wishlist – RASI & CO</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(to bottom right, #fef9f9, #f0f9ff);
+      margin: 0;
+      padding: 0;
+    }
+    header {
+      background: linear-gradient(90deg, #dd2c2f,#dd2c2f,#dd2c2f);
+      color: white;
+      padding: 15px;
+      text-align: center;
+      font-size: 24px;
+    }
+    .back {
+      display: inline-block;
+      margin-top: 10px;
+      color: white;
+      font-size: 16px;
+      text-decoration: underline;
+      cursor: pointer;
+    }
+    .wishlist-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 20px;
+      padding: 20px;
+    }
+    .wishlist-card {
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+      overflow: hidden;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .wishlist-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+    }
+    .wishlist-img {
+      width: 100%;
+      height: 250px;
+      object-fit: cover;
+      display: block;
+    }
+    .wishlist-details {
+      padding: 15px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .wishlist-name {
+      font-size: 18px;
+      font-weight: bold;
+      margin: 10px 0;
+      color: #444;
+    }
+    .wishlist-price {
+      font-size: 17px;
+      font-weight: bold;
+      color: #dd2c2f;
+      margin-bottom: 15px;
+    }
+    .btn {
+      background: linear-gradient(90deg, #dd2c2f,#dd2c2f);
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-size: 14px;
+      font-weight: bold;
+      margin: 4px;
+    }
+    .btn:hover {
+      background: linear-gradient(90deg, #dd2c2f,#dd2c2f);
+      box-shadow: 0 4px 12px rgba(255, 77, 109, 0.4);
+    }
+    .checkout-container {
+      text-align: center;
+      margin: 20px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    ❤ My Wishlist
+    <div class="back" onclick="window.location.href='home.html'">← Back to Shop</div>
+  </header>
+
+  <div class="wishlist-grid" id="wishlist-container"></div>
+
+  <!-- Proceed to Checkout button will go here -->
+  <div class="checkout-container" id="checkout-container" style="display:none;">
+    <button class="btn" onclick="proceedToCheckout()">Proceed to Checkout</button>
+  </div>
+
+  <script>
+    const wishlistContainer = document.getElementById("wishlist-container");
+    const checkoutContainer = document.getElementById("checkout-container");
+    let wishlist = JSON.parse(localStorage.getItem("wishlist")) || [];
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+    function renderWishlist() {
+      wishlistContainer.innerHTML = "";
+      if (!wishlist || wishlist.length === 0) {
+        wishlistContainer.innerHTML = "<p style='grid-column:1/-1;text-align:center;font-size:18px;'>Your wishlist is empty.</p>";
+        checkoutContainer.style.display = "none";
+        return;
+      }
+
+      wishlist.forEach((item, index) => {
+        const img = item.img || "https://via.placeholder.com/250x250?text=No+Image";
+        const name = item.name || "Unnamed Product";
+        const price = item.price ? Number(item.price).toFixed(2) : "0.00";
+
+        const card = document.createElement("div");
+        card.className = "wishlist-card";
+        card.innerHTML = `
+          <img src="${img}" alt="${name}" class="wishlist-img">
+          <div class="wishlist-details">
+            <div class="wishlist-name">${name}</div>
+            <div class="wishlist-price">₹${price}</div>
+            <button class="btn add-to-cart" data-index="${index}">Add to Cart</button>
+            <button class="btn buy-now" data-index="${index}">Buy Now</button>
+            <button class="btn remove" data-index="${index}">Remove ❌</button>
+          </div>
+        `;
+        wishlistContainer.appendChild(card);
+      });
+
+      // show the checkout button
+      checkoutContainer.style.display = "block";
+
+      // Add to Cart
+      document.querySelectorAll(".add-to-cart").forEach(button => {
+        button.addEventListener("click", () => {
+          const index = button.getAttribute("data-index");
+          cart.push(wishlist[index]);
+          localStorage.setItem("cart", JSON.stringify(cart));
+          alert($`{wishlist[index].name} added to cart!`);
+        });
+      });
+
+      // Buy Now
+      document.querySelectorAll(".buy-now").forEach(button => {
+        button.addEventListener("click", () => {
+          const index = button.getAttribute("data-index");
+          cart.push(wishlist[index]);
+          localStorage.setItem("cart", JSON.stringify(cart));
+          window.location.href = "checkout.html"; // go to checkout page
+        });
+      });
+
+      // Remove from wishlist
+      document.querySelectorAll(".remove").forEach(button => {
+        button.addEventListener("click", () => {
+          const index = button.getAttribute("data-index");
+          wishlist.splice(index, 1);
+          localStorage.setItem("wishlist", JSON.stringify(wishlist));
+          renderWishlist();
+        });
+      });
+    }
+
+    function proceedToCheckout() {
+      // Move all wishlist items to cart and go to checkout
+      cart = cart.concat(wishlist);
+      localStorage.setItem("cart", JSON.stringify(cart));
+      alert("All wishlist items moved to cart. Proceeding to checkout.");
+      window.location.href = "checkout.html";
+    }
+
+    renderWishlist();
+
+    fetch('http://localhost:5000/api/wishlist', {
+  method:'POST',
+  headers:{'Content-Type':'application/json'},
+  body:JSON.stringify({user_id:1, product_name:'iPhone'})
+})
+
+  </script>
+</body>
+</html>
